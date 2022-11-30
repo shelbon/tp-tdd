@@ -13,6 +13,8 @@ public class DrivingLicenceFinderService {
     private final InMemoryDatabase database;
 
     public Optional<DrivingLicence> findById(UUID drivingLicenceId) {
-        return Optional.ofNullable(DrivingLicence.builder().build());
-}
+        return database.findById(drivingLicenceId);
+
+
+    }
 }
