@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class DrivingLicenceTakingPointsServiceTest {
     @InjectMocks
@@ -41,26 +42,40 @@ class DrivingLicenceTakingPointsServiceTest {
     void should_take_3_points_and_return_driving_license_with_9_points() {
         UUID licenseID = UUID.randomUUID();
         int pointsToTake = 3;
-        int expectedPoints =9;
+        int expectedPoints = 9;
         DrivingLicence drivingLicence = DrivingLicence.builder().id(licenseID).build();
+        DrivingLicence expectedDrivingLicence = DrivingLicence.builder().id(licenseID)
+                .availablePoints(expectedPoints)
+                .build();
         when(database.findById(licenseID)).thenReturn(Optional.of(drivingLicence));
+        when(database.save(licenseID, expectedDrivingLicence)).thenReturn(expectedDrivingLicence);
         Optional<DrivingLicence> returnedLicense = testedService.removePointsFromDrivingLicense(licenseID, pointsToTake);
-        assertThat(returnedLicense).isPresent().isNotSameAs(drivingLicence);
-        assertThat(returnedLicense.get().getAvailablePoints()).isEqualTo(expectedPoints);
+        assertThat(returnedLicense)
+                .isPresent()
+                .isNotSameAs(drivingLicence);
+        assertThat(returnedLicense.get()
+                .getAvailablePoints())
+                .isEqualTo(expectedPoints);
         verify(database).findById(licenseID);
+        verify(database).save(licenseID, expectedDrivingLicence);
         verifyNoMoreInteractions(database);
 
     }
 
     @Test
-    void should_not_make_points_to_be_below_0() {
+    void should_not_make_points_to_fall_below_0() {
         UUID licenseID = UUID.randomUUID();
         int pointsToTake = 13;
-        DrivingLicence drivingLicence = DrivingLicence.builder().id(licenseID).build();
-        when(database.findById(licenseID)).thenReturn(Optional.of(drivingLicence));
+        DrivingLicence expectedDrivingLicence = DrivingLicence.builder()
+                .id(licenseID)
+                .availablePoints(0)
+                .build();
+        when(database.findById(licenseID)).thenReturn(Optional.of(expectedDrivingLicence));
+        when(database.save(licenseID, expectedDrivingLicence)).thenReturn(expectedDrivingLicence);
         Optional<DrivingLicence> returnedLicense = testedService.removePointsFromDrivingLicense(licenseID, pointsToTake);
-        assertThat(returnedLicense).containsSame(drivingLicence);
+        assertThat(returnedLicense.get().getAvailablePoints()).isEqualTo(expectedDrivingLicence.getAvailablePoints());
         verify(database).findById(licenseID);
+        verify(database).save(licenseID, expectedDrivingLicence);
         verifyNoMoreInteractions(database);
     }
 }
