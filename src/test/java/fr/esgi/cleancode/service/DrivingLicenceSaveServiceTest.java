@@ -17,6 +17,7 @@ import java.util.UUID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -70,8 +71,8 @@ class DrivingLicenceSaveServiceTest {
     @Test
     void should_not_save_driving_licence() {
         String socialSecurityNumber = "12478593123547a";
-        when(socialSecurityNumberValidator.validate(socialSecurityNumber))
-                .thenThrow(InvalidDriverSocialSecurityNumberException.class);
+        doThrow(InvalidDriverSocialSecurityNumberException.class)
+                .when(socialSecurityNumberValidator).validate(socialSecurityNumber);
         assertThatExceptionOfType(InvalidDriverSocialSecurityNumberException.class)
                 .isThrownBy(() -> service.saveDrivingLicence(socialSecurityNumber));
 
