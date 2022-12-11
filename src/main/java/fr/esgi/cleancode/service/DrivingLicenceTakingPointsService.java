@@ -9,17 +9,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class DrivingLicenceTakingPointsService {
+public final class DrivingLicenceTakingPointsService {
     private final InMemoryDatabase database;
 
     public Optional<DrivingLicence> removePointsFromDrivingLicense(UUID drivingLicenceId, int pointsToTake) {
         Optional<DrivingLicence> retrievedDrivingLicense = database.findById(drivingLicenceId);
         if (retrievedDrivingLicense.isPresent()) {
             DrivingLicence drivingLicense = retrievedDrivingLicense.get();
-            int currentLicensePoints = drivingLicense.getAvailablePoints();
-            int newDrivingLicensePoints = pointsToTake > currentLicensePoints ?
-                    0:
-                    currentLicensePoints - pointsToTake;
+
+            int newDrivingLicensePoints = getNewDrivingLicensePoints(pointsToTake, drivingLicense.getAvailablePoints());
 
             DrivingLicence newDrivingLicense = DrivingLicence.builder()
                     .id(drivingLicenceId)
@@ -33,5 +31,11 @@ public class DrivingLicenceTakingPointsService {
 
         }
         throw new ResourceNotFoundException("No driving licence found for id" + retrievedDrivingLicense);
+    }
+
+    private static int getNewDrivingLicensePoints(int pointsToTake, int currentLicensePoints) {
+        return pointsToTake > currentLicensePoints ?
+                0 :
+                currentLicensePoints - pointsToTake;
     }
 }
