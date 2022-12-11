@@ -14,7 +14,5 @@ public class DrivingLicenceFinderService {
 
     public Optional<DrivingLicence> findById(UUID drivingLicenceId) {
         return database.findById(drivingLicenceId);
-
-
     }
 }
