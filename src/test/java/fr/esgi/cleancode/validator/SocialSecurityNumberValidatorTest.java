@@ -12,8 +12,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 class SocialSecurityNumberValidatorTest {
     @InjectMocks
     private SocialSecurityNumberValidator validator;
-    @Mock
-    private SocialSecurityNumberValidatorRule validationRule;
+
 
     @Test
     void should_throw_invalid_driver_social_security_number_exception_when_social_security_null() {
